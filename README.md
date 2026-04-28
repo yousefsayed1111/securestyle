@@ -144,7 +144,7 @@ Parallel Systems:
 
 ```bash
 # Clone
-git clone https://github.com/yourusername/sentinel-x-ultimate.git
+git clone https://github.com/yousefsayed1111/sentinel-x-ultimate.git
 cd sentinel-x-ultimate
 
 # Backend
