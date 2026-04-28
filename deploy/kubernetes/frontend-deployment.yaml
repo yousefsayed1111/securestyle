@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-frontend
+  namespace: sentinel-x
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sentinel-frontend
+  template:
+    metadata:
+      labels:
+        app: sentinel-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: sentinel-x/frontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-frontend
+  namespace: sentinel-x
+spec:
+  selector:
+    app: sentinel-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer

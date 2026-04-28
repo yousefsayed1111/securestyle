@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-backend
+  namespace: sentinel-x
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sentinel-backend
+  template:
+    metadata:
+      labels:
+        app: sentinel-backend
+    spec:
+      containers:
+        - name: backend
+          image: sentinel-x/backend:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SENTINEL_LOG_LEVEL
+              value: "INFO"
+            - name: SENTINEL_ELASTICSEARCH_URL
+              value: "http://elasticsearch:9200"
+            - name: SENTINEL_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-backend
+  namespace: sentinel-x
+spec:
+  selector:
+    app: sentinel-backend
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
